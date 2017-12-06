@@ -1,0 +1,93 @@
+---
+title: "Lab 14 - Bivariate Regression & Interpretation"
+author: "Your name here"
+date: "November 28, 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Complete the following exercises below and include all code used to find the answers. Knit together the PDF document and commit both the Lab 14 RMD file and the PDF document to Git. Push the changes to GitHub so both documents are visible in your public GitHub repository.
+
+**1. Select the main focal relationship you're interested in exploring for your poster project.**
+
+  a. Describe the response variable and the explanatory variable and the theoretical relationship you believe exists between these two variables. 
+  
+The population number per tract is directly and strongly correlated with the proportion of total population.   
+  
+  b. Conduct a simple (bivariate) linear regression on your focal relationship and save the model object. Print out the full results by calling `summary()` on your model object. 
+  
+```{r}
+
+bivariatepop <- glm(Count~TotalCount+POPGROUP.display.label,  data = namergedata, family = "poisson")
+summary(bivariatepop)
+
+#regression:
+#AsianN = Bcamb + .00008893 * tractN +sum(alfa_group*group_dummy)
+#Asian prop = AsianN/tractN = Bcamb + .00008893/tractN 
+#Intercept =  4.485e+00 (Cambodian as reference)
+
+1-(bivariatepop$deviance/bivariatepop$null.deviance)^2
+#amount of variance explained when taking in consideration the tract and the subgroup
+
+```
+
+  c. What is the direction, magnitude, and statistical significance of the bivariate association between the explanatory and response variables. 
+
+It is a positive relationship, the slope of the total count is very small (8.893e-05) describing the magnitude, and the p-value is very small as well, showing that there is a strong evidence agaist the Ho of no relationship. 
+  
+d. What is the meaning of the model intercept?
+The value of the intercept is 4.485e+00, demosntrating that for a Census tract at 0 population, there is 4.49 Cambodian representation. 
+
+e. How well does the bivariate model fit the data? How is this information calculated?
+  
+AsianN = Bcamb + .0008893 * tractN +sum(alfa_group*group_dummy)
+The R^2 is 0.2863632, meaning that 28.6% of the variance of the Asian subgroup population in any given tract is explained by the population of the tract and subgroup identity. 
+
+
+  f. Is the observed association between the independent variable and dependent variable consistent with your hypothesis? Why or why not?
+  
+It is not consistent with the hypothesis as it as assumed in the beginning that there would be a positive association of the Asian subgroup propoetion and the total population in the tract. 
+  
+**2. Select a different focal relationship related to your project. This could be:**
+```{r}
+
+library(ggplot2)
+plot(x=namergedata$Count, y=namergedata$totalprop)
+
+
+
+```
+
+* **A different response and a different explanatory variable**
+
+* **A different response and the same explanatory variable**
+
+* **The same response and a different explanatory variable**
+
+  a. Describe the response variable and the explanatory variable and the theoretical relationship you believe exists between these two variables. 
+  
+There is a positive relationship between the two variables, as the Asian population count increases, the Asian population proportion also increases.
+  
+  b. Conduct a simple (bivariate) linear regression on your focal relationship and save the model object. Print out the full results by calling `summary()` on your model object. 
+  
+```{r}
+simplebivariate <- lm(totalprop~Count, data = namergedata)
+summary(simplebivariate)
+
+```
+
+  c. What is the direction, magnitude, and statistical significance of the bivariate association between the explanatory and response variables. 
+  
+  d. What is the meaning of the model intercept?
+  
+THe intercept y=b if population count is zero
+  
+  e. How well does the bivariate model fit the data? How is this information calculated?
+  
+It fits pretty well, 72% of the variation in the outcome is explained by the variability of the explanatory variable (x-axis) 
+The information is calcularet through R2.
+  
+  f. Is the observed association between the independent variable and dependent variable consistent with your hypothesis? Why or why not?
+
+Yes, it is consistent as it demonstrate positive association expected between the Total count of the population and the population proportion.  
