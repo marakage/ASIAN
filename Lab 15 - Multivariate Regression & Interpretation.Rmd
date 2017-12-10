@@ -65,7 +65,7 @@ summary(bivariatepopsimp)
 #Asian prop = AsianN/tractN = Bcamb + .00008893/tractN 
 #Intercept =  4.485e+00 (Cambodian as reference)
 
-#extra correlation on which groups integrate
+#extra correlation on the level of spatial integration of the Asian subgroups
 library(GGally)
 ggcorr(asian_merged2, layout.exp = 1)
 
