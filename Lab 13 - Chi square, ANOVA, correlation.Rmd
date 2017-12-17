@@ -14,12 +14,41 @@ Complete the following exercises below and include all code used to find the ans
   a. Describe any modifications made to your data for the chi-square test and the composition of the variables used in the test (e.g., study time is measured using a three-category ordinal variable with categories indicating infrequent studying, medium studying, and frequent studying).
 ```{r}
 
-chisq.test( x= mergedata$'GEO.display-label.x', y= mergedata$'POPGROUP.display-label')
+setwd("~/Desktop/Undergrad/STAT/Labs")
+library(dplyr)
+
+AsianAlone <- read.csv("DEC_10_SF2_PCT1_with_ann.csv")
+Education <- read.csv("../Datasets/Education/ACS_15_5YR_S1501_with_ann.csv")
+Totalpopulation <- read.csv("../Datasets/TotalPopulation/ACS_10_5YR_B01003_with_ann.csv",skip=0)
+#EducationAgea <- read.csv("ACS_15_5YR_S1501_with_ann.csv")
+#EducationAgeab <- read.table("ACS_15_5YR_S1501_with_ann.csv", header = T, skip = 1)
+#firstage <- select(EducationAgea, contains("a"))
+library(dplyr)
+library(tidyverse)
+AsianAlone <- read.csv("DEC_10_SF2_PCT1_with_ann.csv")
+
+Totalpopulation <- read_csv("../Datasets/TotalPopulation/ACS_10_5YR_B01003_with_ann.csv",skip=0)
+data_subset_total <- Totalpopulation %>% 
+  filter(GEO.id != "Id") %>%
+  mutate(TotalCount = as.numeric(as.character(HD01_VD01))) 
+
+#transform from factor to numeric
+Data_Asian_Alone <- AsianAlone %>%
+  filter(GEO.id != "Id") %>%
+  filter(POPGROUP.id != "012" & POPGROUP.id != "031") %>% #removing the Asian Alone and Asian in combination groups
+  mutate(Count = as.numeric(as.character(D001))) #creating a new column for the population number as numeric vs character
+
+#barchart
+mergedata <- data_subset_total %>% 
+  left_join(Data_Asian_Alone, by="GEO.id2") %>%
+  select(-GEO.id.y, -ends_with("label.y")) %>%
+  mutate(totalprop = Count/ TotalCount)
+
+
+chisq.test( x= mergedata$'GEO.display-label', y= mergedata$'POPGROUP.display.label')
+#I used tract number and Asian subgroup variables and they are both categorical.
 
 ```
-
-
-I used tract number and Asian subgroup variables and they are both categorical.
 
   b. Does there appear to be an association between your two variables? Explain your reasoning.
 P-Value = 1, that means that there is no dependence of both variables.
@@ -44,7 +73,7 @@ The critial value is larger than the test statistic, therefore we accept the Ho 
   a. Describe any modifications made to your data for the ANOVA test and the composition of the variables used in the test (e.g., college rank is measured using a four-category variable with values indicating freshman, sophomore, junior, and senior class).
 
 ```{r}
-anova(lm(mergedata$Count ~ mergedata$"POPGROUP.display-label"))
+#anova(lm(mergedata$Count ~ mergedata$"POPGROUP.display-label"))
 
 ```
 
@@ -64,7 +93,25 @@ anova(lm(mergedata$Count ~ mergedata$"POPGROUP.display-label"))
 
   c. Create a correlation matrix of your data using the `ggcorr` function from the `GGally` package. Be sure to label each cell with the correlation coefficient. 
 
+```{r}
+
+#install.packages("GGally")
+#library(GGally)
+#ggcorr(namergedata, layout.exp = 1)
+
+
+
+```
+
+
   d. What does this visual representation of correlation coefficients tell you about your data? Are there any relationships (or lack thereof) that are surprising to you? Why or why not?
 
+The ggcorr correlation on shared residential living on tract level by each Asian subgroup shows which groups overlaps and in which degree. Results are consistent as subgroups with similar socioeconomic parameters tend to overlp residentially. There were no surprises shown by correlation levels.
+
   e. What are the limitations of correlation coefficients? Can they ever be misleading? If so, in what ways? 
+  
+Correlations showed a picture of the Asian community in King County, in which groups overlap, but does not tell the whole picture: the percentage of within the group lives in which area and where most of the subgroup is located as neighborhood location is a significant indicator of socioeconomic status. Without this information, it is hard to determined the main objective of the study to convey the differences betweent the subgroups.
+
+  
+  
 
