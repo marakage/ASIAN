@@ -2,12 +2,38 @@
 title: "Lab 10 - Merging Data"
 author: "Your Name Here"
 date: "November 2, 2017"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r}
-setwd("~/Desktop/Honors/STAT/Labs")
+setwd("~/Desktop/Undergrad/STAT/Labs")
+source(file = "Datasets.R")
+
+library(dplyr)
 library(tidyverse)
+AsianAlone <- read.csv("DEC_10_SF2_PCT1_with_ann.csv")
+
+Totalpopulation <- read.csv("../Datasets/TotalPopulation/ACS_10_5YR_B01003_with_ann.csv",skip=0)
+
+data_subset_total <- Totalpopulation %>% 
+  filter(GEO.id != "Id") %>%
+  mutate(TotalCount = as.numeric(as.character(HD01_VD01))) 
+
+
+#transform from factor to numeric
+Data_Asian_Alone <- AsianAlone %>%
+  filter(GEO.id != "Id") %>%
+  filter(POPGROUP.id != "012" & POPGROUP.id != "031") %>% #removing the Asian Alone and Asian in combination groups
+  mutate(Count = as.numeric(as.character(D001))) #creating a new column for the population number as numeric vs character
+
+#barchart
+mergedata <- data_subset_total %>% 
+  left_join(Data_Asian_Alone, by="GEO.id2") %>%
+  select(-GEO.id.y, -ends_with("label.y")) %>%
+  mutate(totalprop = Count/ TotalCount)
+
 ```
 
 Using your own dataset (which may include more than one table) carry out the following data cleaning steps. Knit together the PDF document and commit both the Lab 10 RMD file and the PDF document to Git. Push the changes to GitHub so both documents are visible in your public GitHub repository. 
@@ -37,6 +63,11 @@ If you are merging separate tables as part of your data manipulation process, ar
 ```{r}
 #From lab 8
 #barchart table ready
+mergedata <- data_subset_total %>% 
+  left_join(Data_Asian_Alone, by="GEO.id2") %>%
+  select(-GEO.id.y, -ends_with("label.y")) %>%
+  mutate(totalprop = Count/ TotalCount)
+
 
 barpop <- mergedata %>%
   mutate(Asiansubgroup = POPGROUP.display.label) %>%
